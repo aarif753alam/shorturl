@@ -303,6 +303,45 @@
       box-shadow: none !important;
     }
 
+    /* Copy Button Animation */
+    .copy-btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .copy-btn.copied {
+      background: var(--success) !important;
+    }
+
+    .copy-btn.copied i {
+      animation: iconPulse 0.5s ease;
+    }
+
+    .copy-btn.copied::after {
+      content: '✓ Copied!';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    @keyframes iconPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
     /* Result Section */
     .result-container {
       margin-top: 30px;
@@ -331,6 +370,10 @@
       word-break: break-all;
       margin: 20px 0;
       color: white;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     .short-url a {
@@ -338,6 +381,7 @@
       text-decoration: none;
       border-bottom: 2px solid var(--secondary);
       padding-bottom: 2px;
+      flex: 1;
     }
 
     .short-url a:hover {
@@ -379,6 +423,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      position: relative;
+      overflow: hidden;
     }
 
     .action-btn.copy {
@@ -413,6 +459,22 @@
       padding: 25px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 10px;
+      display: none;
+    }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      margin: 20px 0;
+    }
+
+    #qrcode canvas, #qrcode img {
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      max-width: 100%;
+      height: auto;
     }
 
     /* History Table */
@@ -468,11 +530,19 @@
       display: flex;
       align-items: center;
       gap: 5px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
     }
 
     .history-btn.copy {
       background: rgba(0, 176, 155, 0.2);
       color: var(--success);
+    }
+
+    .history-btn.copy.copied {
+      background: var(--success);
+      color: white;
     }
 
     .history-btn.delete {
@@ -483,6 +553,43 @@
     .history-btn.analytics {
       background: rgba(255, 152, 0, 0.2);
       color: var(--warning);
+    }
+
+    /* Analytics Section */
+    .analytics-section {
+      margin-top: 30px;
+    }
+
+    .analytics-input {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .analytics-input input {
+      flex: 1;
+    }
+
+    .analytics-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .analytics-stat {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .analytics-stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--secondary);
+      margin: 10px 0;
     }
 
     /* Empty States */
@@ -527,6 +634,7 @@
       display: none;
       align-items: center;
       gap: 10px;
+      animation: fadeIn 0.3s ease;
     }
 
     .message.error {
@@ -609,6 +717,15 @@
         flex-direction: column;
         text-align: center;
       }
+      
+      .short-url {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .analytics-input {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -644,7 +761,7 @@
         </div>
       </div>
       <div>
-        <button class="btn btn-small" onclick="copyUserId()">
+        <button class="btn btn-small copy-btn" onclick="copyUserId()" id="copyUserIdBtn">
           <i class="fas fa-copy"></i> Copy ID
         </button>
         <button class="btn btn-small" onclick="generateNewUserId()" style="margin-top: 10px;">
@@ -745,7 +862,12 @@
             <span>Short URL Created Successfully!</span>
           </div>
           
-          <div class="short-url" id="shortURLDisplay"></div>
+          <div class="short-url">
+            <a href="#" id="shortURLLink" target="_blank"></a>
+            <button class="action-btn copy copy-btn" onclick="copyShortURL()" id="copyShortURLBtn">
+              <i class="fas fa-copy"></i> Copy URL
+            </button>
+          </div>
           
           <div class="stats">
             <div class="stat">
@@ -767,14 +889,8 @@
           </div>
           
           <div class="action-buttons">
-            <button class="action-btn copy" onclick="copyShortURL()">
-              <i class="fas fa-copy"></i> Copy URL
-            </button>
             <button class="action-btn qr" onclick="generateQRCode()">
               <i class="fas fa-qrcode"></i> Generate QR
-            </button>
-            <button class="action-btn analytics" onclick="viewAnalytics()">
-              <i class="fas fa-chart-bar"></i> View Analytics
             </button>
             <button class="action-btn delete" onclick="deleteCurrentURL()">
               <i class="fas fa-trash"></i> Delete
@@ -783,11 +899,11 @@
         </div>
         
         <!-- QR Code Container -->
-        <div id="qrContainer" class="qr-container" style="display: none;">
+        <div id="qrContainer" class="qr-container">
           <h3><i class="fas fa-qrcode"></i> QR Code</h3>
           <div id="qrcode"></div>
           <div style="margin-top: 20px;">
-            <button class="action-btn" onclick="downloadQRCode()">
+            <button class="action-btn copy-btn" onclick="downloadQRCode()" id="downloadQRBtn">
               <i class="fas fa-download"></i> Download QR Code
             </button>
           </div>
@@ -825,19 +941,26 @@
           <span>URL Analytics</span>
         </div>
         
-        <div class="input-group">
-          <label for="analyticsKey"><i class="fas fa-key"></i> Enter Short URL Key</label>
-          <div class="input-with-icon">
-            <i class="fas fa-link"></i>
-            <input type="text" id="analyticsKey" placeholder="Enter your short URL key (e.g., smart-tunnel-47)">
+        <div class="analytics-section">
+          <div class="input-group">
+            <label for="analyticsKey"><i class="fas fa-key"></i> Enter Short URL Key</label>
+            <div class="analytics-input">
+              <div class="input-with-icon" style="flex: 1;">
+                <i class="fas fa-link"></i>
+                <input type="text" id="analyticsKey" placeholder="Enter your short URL key (e.g., smart-tunnel-47)">
+              </div>
+              <button class="btn btn-primary" onclick="fetchAnalytics()">
+                <i class="fas fa-search"></i> Get Analytics
+              </button>
+            </div>
+            <div style="font-size: 0.85rem; margin-top: 5px; color: rgba(255,255,255,0.7);">
+              Enter the short URL key (the part after shorturl.aarifalam.life/)
+            </div>
           </div>
-          <button class="btn btn-primary" onclick="fetchAnalytics()" style="margin-top: 10px;">
-            <i class="fas fa-search"></i> Get Analytics
-          </button>
-        </div>
-        
-        <div id="analyticsResult" style="display: none;">
-          <!-- Analytics will be shown here -->
+          
+          <div id="analyticsResult" style="display: none;">
+            <!-- Analytics will be shown here -->
+          </div>
         </div>
       </div>
     </div>
@@ -855,12 +978,12 @@
   <!-- QR Code Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
-<script>
+  <script>
     // Global variables
     const API_BASE = 'https://shorturl.aarifalam.life';
     let currentUserId = null;
     let currentURLData = null;
-    let currentQRCanvas = null;
+    let currentQRDataURL = null;
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
@@ -905,7 +1028,10 @@
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
       // Activate selected tab
-      document.querySelector(`.tab[onclick*="${tabName}"]`).classList.add('active');
+      const tabElement = document.querySelector(`.tab[onclick*="${tabName}"]`);
+      if (tabElement) {
+        tabElement.classList.add('active');
+      }
       document.getElementById(tabName + 'Tab').classList.add('active');
       
       // Load content for tab
@@ -913,6 +1039,7 @@
         loadHistory();
       } else if (tabName === 'analytics') {
         document.getElementById('analyticsResult').style.display = 'none';
+        document.getElementById('analyticsKey').value = '';
       }
     }
 
@@ -987,14 +1114,15 @@
     // Display created URL result
     function displayResult(data) {
       const resultContainer = document.getElementById('resultContainer');
-      const shortURLDisplay = document.getElementById('shortURLDisplay');
+      const shortURLLink = document.getElementById('shortURLLink');
       const createdDate = document.getElementById('createdDate');
       const expiryDate = document.getElementById('expiryDate');
       const clickCount = document.getElementById('clickCount');
       const passwordStatus = document.getElementById('passwordStatus');
       
       // Set values
-      shortURLDisplay.innerHTML = `<a href="${data.shortURL}" target="_blank">${data.shortURL}</a>`;
+      shortURLLink.href = data.shortURL;
+      shortURLLink.textContent = data.shortURL;
       createdDate.textContent = formatDate(new Date());
       
       if (data.expires) {
@@ -1060,6 +1188,9 @@
               </td>
               <td class="history-url">
                 <a href="${shortURL}" target="_blank">${shortURL}</a>
+                <button class="history-btn copy copy-btn" onclick="copyHistoryURL('${item.key}')" data-key="${item.key}">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
               </td>
               <td>${createdDate}</td>
               <td>${item.clicks || 0}</td>
@@ -1070,11 +1201,8 @@
               </td>
               <td>
                 <div class="history-actions">
-                  <button class="history-btn copy" onclick="copyHistoryURL('${item.key}')">
-                    <i class="fas fa-copy"></i> Copy
-                  </button>
-                  <button class="history-btn analytics" onclick="viewURLInfo('${item.key}')">
-                    <i class="fas fa-chart-bar"></i> Info
+                  <button class="history-btn analytics" onclick="showURLInfo('${item.key}')">
+                    <i class="fas fa-info-circle"></i> Info
                   </button>
                   <button class="history-btn delete" onclick="deleteHistoryURL('${item.key}')">
                     <i class="fas fa-trash"></i> Delete
@@ -1152,31 +1280,50 @@
           <div class="result-title">
             <i class="fas fa-chart-bar"></i>
             <span>Analytics for: ${info.key}</span>
+            <button class="btn btn-small copy-btn" onclick="copyToClipboard('${API_BASE}/${info.key}', this)" style="margin-left: auto;">
+              <i class="fas fa-copy"></i> Copy URL
+            </button>
           </div>
           
-          <div class="stats">
-            <div class="stat">
-              <i class="fas fa-link"></i>
-              <span>Short URL: <a href="${API_BASE}/${info.key}" target="_blank">${API_BASE}/${info.key}</a></span>
-            </div>
-            <div class="stat">
-              <i class="fas fa-calendar"></i>
-              <span>Created: ${formatDate(new Date(info.created))}</span>
-            </div>
-            <div class="stat">
+          <div class="analytics-stats">
+            <div class="analytics-stat">
               <i class="fas fa-mouse-pointer"></i>
-              <span>Clicks: ${info.clicks || 0}</span>
+              <div class="analytics-stat-value">${info.clicks || 0}</div>
+              <div>Total Clicks</div>
             </div>
-            <div class="stat">
+            <div class="analytics-stat">
+              <i class="fas fa-calendar"></i>
+              <div class="analytics-stat-value">${formatDateShort(new Date(info.created))}</div>
+              <div>Created Date</div>
+            </div>
+            <div class="analytics-stat">
               <i class="fas fa-clock"></i>
-              <span>Last Click: ${info.lastAccessed ? formatDate(new Date(info.lastAccessed)) : 'Never'}</span>
+              <div class="analytics-stat-value">${info.lastAccessed ? formatDateShort(new Date(info.lastAccessed)) : 'Never'}</div>
+              <div>Last Click</div>
+            </div>
+            <div class="analytics-stat">
+              <i class="fas fa-link"></i>
+              <div class="analytics-stat-value" style="font-size: 1.2rem;">${info.key}</div>
+              <div>Short Key</div>
             </div>
           </div>
           
           <div style="margin-top: 20px;">
-            <h4>Destination URL:</h4>
-            <div style="word-break: break-all; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; margin-top: 5px;">
+            <h4><i class="fas fa-external-link-alt"></i> Destination URL:</h4>
+            <div style="word-break: break-all; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 10px; font-family: monospace;">
               ${info.longURL}
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h4><i class="fas fa-share-alt"></i> Share Links:</h4>
+            <div class="action-buttons">
+              <button class="action-btn copy copy-btn" onclick="copyToClipboard('${API_BASE}/${info.key}', this)">
+                <i class="fas fa-copy"></i> Copy Short URL
+              </button>
+              <button class="action-btn qr" onclick="generateQRCodeForAnalytics('${API_BASE}/${info.key}')">
+                <i class="fas fa-qrcode"></i> Generate QR
+              </button>
             </div>
           </div>
         </div>
@@ -1184,13 +1331,48 @@
       
       analyticsResult.innerHTML = html;
       analyticsResult.style.display = 'block';
+      analyticsResult.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Utility Functions
-    function copyUserId() {
-      navigator.clipboard.writeText(currentUserId)
-        .then(() => showMessage('User ID copied to clipboard!', 'success'))
-        .catch(() => showMessage('Failed to copy User ID', 'error'));
+    // Generate QR code for analytics
+    function generateQRCodeForAnalytics(url) {
+      currentURLData = { shortURL: url };
+      generateQRCode();
+    }
+
+    // Copy with animation
+    async function copyToClipboard(text, button = null) {
+      try {
+        await navigator.clipboard.writeText(text);
+        
+        if (button) {
+          // Animate the clicked button
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.classList.remove('copied');
+          }, 2000);
+        }
+        
+        showMessage('Copied to clipboard!', 'success');
+      } catch (error) {
+        showMessage('Failed to copy', 'error');
+      }
+    }
+
+    // Animated copy functions
+    async function copyUserId() {
+      await copyToClipboard(currentUserId, document.getElementById('copyUserIdBtn'));
+    }
+
+    async function copyShortURL() {
+      if (!currentURLData) return;
+      await copyToClipboard(currentURLData.shortURL, document.getElementById('copyShortURLBtn'));
+    }
+
+    async function copyHistoryURL(key) {
+      const url = `${API_BASE}/${key}`;
+      const button = document.querySelector(`button[data-key="${key}"]`);
+      await copyToClipboard(url, button);
     }
 
     function generateNewUserId() {
@@ -1217,22 +1399,7 @@
       document.getElementById('expiryDays').value = '30';
     }
 
-    function copyShortURL() {
-      if (!currentURLData) return;
-      
-      navigator.clipboard.writeText(currentURLData.shortURL)
-        .then(() => showMessage('URL copied to clipboard!', 'success'))
-        .catch(() => showMessage('Failed to copy URL', 'error'));
-    }
-
-    function copyHistoryURL(key) {
-      const url = `${API_BASE}/${key}`;
-      navigator.clipboard.writeText(url)
-        .then(() => showMessage('URL copied to clipboard!', 'success'))
-        .catch(() => showMessage('Failed to copy URL', 'error'));
-    }
-
-    // ========== FIXED QR CODE FUNCTIONS ==========
+    // QR Code Functions
     function generateQRCode() {
       if (!currentURLData || !currentURLData.shortURL) {
         showMessage('Please create a short URL first', 'error');
@@ -1242,109 +1409,122 @@
       const qrContainer = document.getElementById('qrContainer');
       const qrcodeElement = document.getElementById('qrcode');
       
-      if (!qrContainer || !qrcodeElement) {
-        showMessage('QR code elements not found', 'error');
-        return;
-      }
-      
       // Clear previous QR code
       qrcodeElement.innerHTML = '';
       
-      // Check if QRCode library is loaded
-      if (typeof QRCode === 'undefined') {
-        showMessage('QR Code library not loaded. Please refresh page.', 'error');
-        return;
-      }
+      // Show loading
+      qrcodeElement.innerHTML = '<div class="loader" style="width: 40px; height: 40px; margin: 20px auto;"></div>';
       
       try {
-        QRCode.toCanvas(qrcodeElement, currentURLData.shortURL, {
-          width: 200,
-          height: 200,
-          color: {
-            dark: '#6a11cb',
-            light: '#ffffff'
-          }
-        }, function(error, canvas) {
-          if (error) {
-            console.error('QR Code error:', error);
-            showMessage('Failed to generate QR code', 'error');
+        // Use QRCode library to generate canvas
+        QRCode.toCanvas(
+          qrcodeElement,
+          currentURLData.shortURL,
+          {
+            width: 200,
+            height: 200,
+            margin: 2,
+            color: {
+              dark: '#6a11cb',
+              light: '#ffffff'
+            }
+          },
+          function(error, canvas) {
+            if (error) {
+              console.error('QR Code generation error:', error);
+              
+              // Fallback: Create simple QR using API
+              const encodedURL = encodeURIComponent(currentURLData.shortURL);
+              qrcodeElement.innerHTML = `
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedURL}&color=6a11cb&bgcolor=ffffff" 
+                     alt="QR Code" 
+                     style="width: 200px; height: 200px;">
+                <p style="margin-top: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                  Generated via external service
+                </p>
+              `;
+              const img = qrcodeElement.querySelector('img');
+              img.onload = function() {
+                currentQRDataURL = img.src;
+              };
+            } else {
+              // Store canvas for download
+              currentQRDataURL = canvas.toDataURL('image/png');
+              // Replace loader with canvas
+              qrcodeElement.innerHTML = '';
+              qrcodeElement.appendChild(canvas);
+            }
             
-            // Fallback: Use QR server API
-            const encodedURL = encodeURIComponent(currentURLData.shortURL);
-            qrcodeElement.innerHTML = `
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedURL}&color=6a11cb&bgcolor=ffffff" 
-                   alt="QR Code" 
-                   style="width: 200px; height: 200px;">
-            `;
-            currentQRCanvas = null;
-          } else {
-            // Store the canvas for download
-            currentQRCanvas = canvas;
-            console.log('QR Code generated successfully');
+            // Show QR container
+            qrContainer.style.display = 'block';
+            qrContainer.scrollIntoView({ behavior: 'smooth' });
+            showMessage('QR code generated successfully!', 'success');
           }
-          
-          // Show the QR container
-          qrContainer.style.display = 'block';
-          qrContainer.scrollIntoView({ behavior: 'smooth' });
-        });
+        );
+        
       } catch (error) {
         console.error('QR Code exception:', error);
-        showMessage('QR code generation failed', 'error');
+        showMessage('QR code generation failed. Using fallback.', 'warning');
+        
+        // Fallback to external API
+        const encodedURL = encodeURIComponent(currentURLData.shortURL);
+        qrcodeElement.innerHTML = `
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedURL}&color=6a11cb&bgcolor=ffffff" 
+               alt="QR Code" 
+               style="width: 200px; height: 200px;">
+          <p style="margin-top: 10px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+            Generated via external service
+          </p>
+        `;
+        const img = qrcodeElement.querySelector('img');
+        img.onload = function() {
+          currentQRDataURL = img.src;
+        };
+        qrContainer.style.display = 'block';
+        qrContainer.scrollIntoView({ behavior: 'smooth' });
       }
     }
 
     function downloadQRCode() {
-      // Check if we have a QR code to download
-      let downloadSource = null;
-      let filename = 'qrcode.png';
-      
-      // Get filename from current URL data
-      if (currentURLData && currentURLData.key) {
-        filename = `qr-${currentURLData.key}.png`;
-      }
-      
-      // Try to get the stored canvas first
-      if (currentQRCanvas) {
-        downloadSource = currentQRCanvas.toDataURL('image/png');
-      } 
-      // Try to find canvas in the DOM
-      else {
-        const canvas = document.querySelector('#qrcode canvas');
-        if (canvas) {
-          downloadSource = canvas.toDataURL('image/png');
-        } 
-        // Try to find an image in the DOM
-        else {
-          const img = document.querySelector('#qrcode img');
-          if (img) {
-            downloadSource = img.src;
-          }
-        }
-      }
-      
-      if (!downloadSource) {
+      if (!currentQRDataURL) {
         showMessage('Please generate a QR code first', 'error');
         return;
       }
       
       try {
+        // Create filename
+        let filename = 'qrcode.png';
+        if (currentURLData && currentURLData.key) {
+          filename = `qr-${currentURLData.key}-${Date.now()}.png`;
+        }
+        
         // Create download link
         const link = document.createElement('a');
-        link.href = downloadSource;
+        link.href = currentQRDataURL;
         link.download = filename;
+        link.style.display = 'none';
         
         // Append to body, click, and remove
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         
+        // Animate download button
+        const downloadBtn = document.getElementById('downloadQRBtn');
+        if (downloadBtn) {
+          downloadBtn.classList.add('copied');
+          setTimeout(() => {
+            downloadBtn.classList.remove('copied');
+          }, 2000);
+        }
+        
         showMessage('QR code downloaded successfully!', 'success');
+        
       } catch (error) {
         console.error('Download error:', error);
         showMessage('Failed to download QR code', 'error');
       }
     }
-    // ========== END QR CODE FUNCTIONS ==========
 
     async function deleteCurrentURL() {
       if (!currentURLData || !confirm('Delete this short URL?')) return;
@@ -1362,6 +1542,7 @@
           showMessage('URL deleted successfully', 'success');
           document.getElementById('resultContainer').style.display = 'none';
           currentURLData = null;
+          currentQRDataURL = null;
           loadHistory();
         } else {
           showMessage(data.error || 'Failed to delete URL', 'error');
@@ -1415,7 +1596,7 @@
       }
     }
 
-    async function viewURLInfo(key) {
+    async function showURLInfo(key) {
       try {
         const response = await fetch(`${API_BASE}/api/info/${key}`);
         const data = await response.json();
@@ -1424,7 +1605,7 @@
           alert(`
 URL Information:
 ---------------
-Key: ${data.info.key}
+Short URL: ${API_BASE}/${data.info.key}
 Created: ${formatDate(new Date(data.info.created))}
 Clicks: ${data.info.clicks || 0}
 Expires: ${data.info.expiry ? formatDate(new Date(data.info.expiry)) : 'Never'}
@@ -1435,14 +1616,6 @@ Long URL: ${data.info.longURL}
       } catch (error) {
         showMessage('Failed to get URL info', 'error');
       }
-    }
-
-    function viewAnalytics() {
-      if (!currentURLData) return;
-      
-      document.getElementById('analyticsKey').value = currentURLData.key;
-      switchTab('analytics');
-      setTimeout(() => fetchAnalytics(), 100);
     }
 
     function refreshHistory() {
@@ -1483,6 +1656,14 @@ Long URL: ${data.info.longURL}
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
+      });
+    }
+
+    function formatDateShort(date) {
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
       });
     }
   </script>
