@@ -781,19 +781,28 @@
             </button>
           </div>
         </div>
+        </div> <!-- Closing card div -->
         
-        <!-- QR Code Container -->
+        <!-- QR Code Container - MUST HAVE THIS STRUCTURE -->
         <div id="qrContainer" class="qr-container" style="display: none;">
           <h3><i class="fas fa-qrcode"></i> QR Code</h3>
           <div id="qrcode"></div>
-          <div style="margin-top: 20px;">
-            <button class="action-btn" onclick="downloadQRCode()">
-              <i class="fas fa-download"></i> Download QR Code
+          
+          <!-- Replace the QR container buttons section with this: -->
+          <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button class="action-btn" onclick="downloadQRCode()" style="background: #00b09b;">
+              <i class="fas fa-download"></i> Download QR
+            </button>
+            <button class="action-btn" onclick="copyQRCodeToClipboard()" style="background: #2196F3;">
+              <i class="fas fa-copy"></i> Copy QR
+            </button>
+            <button class="action-btn" onclick="shareQRCode()" style="background: #4CAF50;">
+              <i class="fas fa-share-alt"></i> Share
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </div> <!-- Closing result-container -->
+    </div> <!-- Closing createTab -->
 
     <!-- History Tab -->
     <div id="historyTab" class="tab-content">
@@ -850,17 +859,16 @@
       </p>
       <p>© 2025 QuantumLink URL Shortener. All rights reserved.</p>
     </div>
-  </div>
 
   <!-- QR Code Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
-  <script>
+<script>
     // Global variables
     const API_BASE = 'https://shorturl.aarifalam.life';
     let currentUserId = null;
     let currentURLData = null;
-    let currentQRCode = null;
+    let currentQRCanvas = null;
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
@@ -1232,40 +1240,119 @@
         .catch(() => showMessage('Failed to copy URL', 'error'));
     }
 
+    // ========== FIXED QR CODE FUNCTIONS ==========
     function generateQRCode() {
-      if (!currentURLData) return;
+      if (!currentURLData || !currentURLData.shortURL) {
+        showMessage('Please create a short URL first', 'error');
+        return;
+      }
       
       const qrContainer = document.getElementById('qrContainer');
       const qrcodeElement = document.getElementById('qrcode');
       
+      if (!qrContainer || !qrcodeElement) {
+        showMessage('QR code elements not found', 'error');
+        return;
+      }
+      
+      // Clear previous QR code
       qrcodeElement.innerHTML = '';
       
-      QRCode.toCanvas(qrcodeElement, currentURLData.shortURL, {
-        width: 200,
-        height: 200,
-        color: {
-          dark: '#6a11cb',
-          light: '#ffffff'
-        }
-      }, function(error) {
-        if (error) {
-          showMessage('Failed to generate QR code', 'error');
-        } else {
+      // Check if QRCode library is loaded
+      if (typeof QRCode === 'undefined') {
+        showMessage('QR Code library not loaded. Please refresh page.', 'error');
+        return;
+      }
+      
+      try {
+        QRCode.toCanvas(qrcodeElement, currentURLData.shortURL, {
+          width: 200,
+          height: 200,
+          color: {
+            dark: '#6a11cb',
+            light: '#ffffff'
+          }
+        }, function(error, canvas) {
+          if (error) {
+            console.error('QR Code error:', error);
+            showMessage('Failed to generate QR code', 'error');
+            
+            // Fallback: Use QR server API
+            const encodedURL = encodeURIComponent(currentURLData.shortURL);
+            qrcodeElement.innerHTML = `
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodedURL}&color=6a11cb&bgcolor=ffffff" 
+                   alt="QR Code" 
+                   style="width: 200px; height: 200px;">
+            `;
+            currentQRCanvas = null;
+          } else {
+            // Store the canvas for download
+            currentQRCanvas = canvas;
+            console.log('QR Code generated successfully');
+          }
+          
+          // Show the QR container
           qrContainer.style.display = 'block';
           qrContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
+        });
+      } catch (error) {
+        console.error('QR Code exception:', error);
+        showMessage('QR code generation failed', 'error');
+      }
     }
 
     function downloadQRCode() {
-      const canvas = document.querySelector('#qrcode canvas');
-      if (!canvas) return;
+      // Check if we have a QR code to download
+      let downloadSource = null;
+      let filename = 'qrcode.png';
       
-      const link = document.createElement('a');
-      link.download = `qr-${currentURLData.key}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      // Get filename from current URL data
+      if (currentURLData && currentURLData.key) {
+        filename = `qr-${currentURLData.key}.png`;
+      }
+      
+      // Try to get the stored canvas first
+      if (currentQRCanvas) {
+        downloadSource = currentQRCanvas.toDataURL('image/png');
+      } 
+      // Try to find canvas in the DOM
+      else {
+        const canvas = document.querySelector('#qrcode canvas');
+        if (canvas) {
+          downloadSource = canvas.toDataURL('image/png');
+        } 
+        // Try to find an image in the DOM
+        else {
+          const img = document.querySelector('#qrcode img');
+          if (img) {
+            downloadSource = img.src;
+          }
+        }
+      }
+      
+      if (!downloadSource) {
+        showMessage('Please generate a QR code first', 'error');
+        return;
+      }
+      
+      try {
+        // Create download link
+        const link = document.createElement('a');
+        link.href = downloadSource;
+        link.download = filename;
+        
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showMessage('QR code downloaded successfully!', 'success');
+      } catch (error) {
+        console.error('Download error:', error);
+        showMessage('Failed to download QR code', 'error');
+      }
     }
+    // ========== END QR CODE FUNCTIONS ==========
 
     async function deleteCurrentURL() {
       if (!currentURLData || !confirm('Delete this short URL?')) return;
@@ -1407,8 +1494,51 @@ Long URL: ${data.info.longURL}
       });
     }
   </script>
-  <script src="js/qr.js"></script>
-  <script src="js/qr1.js"></script>
+    <script>
+      // ========== ADD THESE QR EXTRA FUNCTIONS ==========
+function copyQRCodeToClipboard() {
+  if (!currentQRCanvas) {
+    showMessage('Generate a QR code first', 'error');
+    return;
+  }
+  
+  // Convert canvas to blob and copy
+  currentQRCanvas.toBlob(blob => {
+    const item = new ClipboardItem({ 'image/png': blob });
+    navigator.clipboard.write([item])
+      .then(() => showMessage('QR code copied to clipboard!', 'success'))
+      .catch(() => showMessage('Failed to copy QR code', 'error'));
+  });
+}
+
+function shareQRCode() {
+  if (!currentQRCanvas || !currentURLData) {
+    showMessage('Generate a QR code first', 'error');
+    return;
+  }
+  
+  if (!navigator.share) {
+    showMessage('Sharing not supported on this device', 'error');
+    return;
+  }
+  
+  currentQRCanvas.toBlob(blob => {
+    const file = new File([blob], `qr-${currentURLData.key}.png`, { type: 'image/png' });
+    
+    navigator.share({
+      title: 'My Short URL',
+      text: `Check out this short URL: ${currentURLData.shortURL}`,
+      files: [file]
+    })
+    .then(() => showMessage('QR code shared!', 'success'))
+    .catch(error => {
+      if (error.name !== 'AbortError') {
+        showMessage('Failed to share QR code', 'error');
+      }
+    });
+  });
+}
+  </script>
+
 </body>
 </html>
-
