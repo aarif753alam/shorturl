@@ -781,28 +781,19 @@
             </button>
           </div>
         </div>
-        </div> <!-- Closing card div -->
         
-        <!-- QR Code Container - MUST HAVE THIS STRUCTURE -->
+        <!-- QR Code Container -->
         <div id="qrContainer" class="qr-container" style="display: none;">
           <h3><i class="fas fa-qrcode"></i> QR Code</h3>
           <div id="qrcode"></div>
-          
-          <!-- Replace the QR container buttons section with this: -->
-          <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-            <button class="action-btn" onclick="downloadQRCode()" style="background: #00b09b;">
-              <i class="fas fa-download"></i> Download QR
-            </button>
-            <button class="action-btn" onclick="copyQRCodeToClipboard()" style="background: #2196F3;">
-              <i class="fas fa-copy"></i> Copy QR
-            </button>
-            <button class="action-btn" onclick="shareQRCode()" style="background: #4CAF50;">
-              <i class="fas fa-share-alt"></i> Share
+          <div style="margin-top: 20px;">
+            <button class="action-btn" onclick="downloadQRCode()">
+              <i class="fas fa-download"></i> Download QR Code
             </button>
           </div>
         </div>
-      </div> <!-- Closing result-container -->
-    </div> <!-- Closing createTab -->
+      </div>
+    </div>
 
     <!-- History Tab -->
     <div id="historyTab" class="tab-content">
@@ -859,6 +850,7 @@
       </p>
       <p>© 2025 QuantumLink URL Shortener. All rights reserved.</p>
     </div>
+  </div>
 
   <!-- QR Code Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
@@ -1494,51 +1486,5 @@ Long URL: ${data.info.longURL}
       });
     }
   </script>
-    <script>
-      // ========== ADD THESE QR EXTRA FUNCTIONS ==========
-function copyQRCodeToClipboard() {
-  if (!currentQRCanvas) {
-    showMessage('Generate a QR code first', 'error');
-    return;
-  }
-  
-  // Convert canvas to blob and copy
-  currentQRCanvas.toBlob(blob => {
-    const item = new ClipboardItem({ 'image/png': blob });
-    navigator.clipboard.write([item])
-      .then(() => showMessage('QR code copied to clipboard!', 'success'))
-      .catch(() => showMessage('Failed to copy QR code', 'error'));
-  });
-}
-
-function shareQRCode() {
-  if (!currentQRCanvas || !currentURLData) {
-    showMessage('Generate a QR code first', 'error');
-    return;
-  }
-  
-  if (!navigator.share) {
-    showMessage('Sharing not supported on this device', 'error');
-    return;
-  }
-  
-  currentQRCanvas.toBlob(blob => {
-    const file = new File([blob], `qr-${currentURLData.key}.png`, { type: 'image/png' });
-    
-    navigator.share({
-      title: 'My Short URL',
-      text: `Check out this short URL: ${currentURLData.shortURL}`,
-      files: [file]
-    })
-    .then(() => showMessage('QR code shared!', 'success'))
-    .catch(error => {
-      if (error.name !== 'AbortError') {
-        showMessage('Failed to share QR code', 'error');
-      }
-    });
-  });
-}
-  </script>
-
 </body>
 </html>
