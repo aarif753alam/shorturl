@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuantumLink | Advanced URL Shortener - aarifalam.life</title>
+  <title>QuantumLink | Advanced URL Shortener</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -11,37 +11,40 @@
       --secondary: #2575fc;
       --accent: #ff5e62;
       --success: #00b09b;
+      --warning: #ff9800;
       --dark: #121212;
       --light: #f8f9fa;
       --gray: #6c757d;
+      --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      --card-bg: rgba(25, 25, 35, 0.9);
     }
 
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      background: var(--bg-gradient);
+      color: var(--light);
       min-height: 100vh;
       padding: 20px;
-      color: var(--light);
     }
 
     .container {
-      width: 100%;
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
+    /* Header */
     .header {
       background: linear-gradient(to right, var(--primary), var(--secondary));
       padding: 25px 30px;
-      text-align: center;
       border-radius: 20px;
       margin-bottom: 30px;
+      text-align: center;
       position: relative;
       overflow: hidden;
     }
@@ -67,23 +70,52 @@
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       margin: 0;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     .tagline {
-      font-size: 1rem;
+      font-size: 1.1rem;
       opacity: 0.9;
-      margin-top: 5px;
+      margin-top: 8px;
     }
 
+    /* User ID Section */
+    .user-section {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-id {
+      font-family: monospace;
+      background: rgba(0, 176, 155, 0.1);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-top: 8px;
+      word-break: break-all;
+      border: 1px solid rgba(0, 176, 155, 0.3);
+    }
+
+    /* Tabs */
     .tabs {
       display: flex;
-      background: rgba(40, 40, 50, 0.7);
+      background: var(--card-bg);
       border-radius: 15px;
       margin-bottom: 25px;
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .tab {
@@ -94,19 +126,21 @@
       transition: all 0.3s;
       font-weight: 600;
       font-size: 1.1rem;
+      border-bottom: 3px solid transparent;
     }
 
     .tab:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .tab.active {
-      background: linear-gradient(to right, var(--primary), var(--secondary));
+      background: rgba(37, 117, 252, 0.1);
+      border-bottom: 3px solid var(--secondary);
     }
 
     .tab-content {
       display: none;
-      animation: fadeIn 0.5s ease;
+      animation: fadeIn 0.3s ease;
     }
 
     .tab-content.active {
@@ -118,13 +152,14 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Cards */
     .card {
-      background: rgba(25, 25, 35, 0.9);
+      background: var(--card-bg);
       border-radius: 15px;
       padding: 30px;
       margin-bottom: 25px;
       border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .card-title {
@@ -136,6 +171,11 @@
       color: var(--secondary);
     }
 
+    .card-title i {
+      font-size: 1.2rem;
+    }
+
+    /* Form Styles */
     .input-group {
       margin-bottom: 20px;
     }
@@ -145,6 +185,9 @@
       margin-bottom: 8px;
       font-weight: 500;
       color: #ddd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .input-with-icon {
@@ -159,7 +202,7 @@
       color: var(--gray);
     }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 15px 15px 15px 45px;
       background: rgba(255, 255, 255, 0.07);
@@ -170,15 +213,19 @@
       transition: all 0.3s;
     }
 
-    input:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--secondary);
       box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
     }
 
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
     .expiry-options {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 10px;
       margin-top: 10px;
     }
@@ -202,6 +249,7 @@
       border-color: var(--secondary);
     }
 
+    /* Buttons */
     .button-group {
       display: flex;
       gap: 15px;
@@ -243,6 +291,11 @@
       background: rgba(255, 255, 255, 0.15);
     }
 
+    .btn-small {
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+
     .btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -250,10 +303,9 @@
       box-shadow: none !important;
     }
 
-    /* Result Container */
+    /* Result Section */
     .result-container {
       margin-top: 30px;
-      animation: slideUp 0.5s ease;
     }
 
     .result-box {
@@ -266,7 +318,7 @@
 
     .result-title {
       color: var(--success);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       margin-bottom: 15px;
       display: flex;
       align-items: center;
@@ -274,11 +326,22 @@
     }
 
     .short-url {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 600;
       word-break: break-all;
-      margin: 15px 0;
+      margin: 20px 0;
       color: white;
+    }
+
+    .short-url a {
+      color: white;
+      text-decoration: none;
+      border-bottom: 2px solid var(--secondary);
+      padding-bottom: 2px;
+    }
+
+    .short-url a:hover {
+      color: var(--secondary);
     }
 
     .stats {
@@ -316,7 +379,6 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      font-size: 14px;
     }
 
     .action-btn.copy {
@@ -330,11 +392,30 @@
     }
 
     .action-btn.delete {
-      background: #ff5e62;
+      background: var(--accent);
       color: white;
     }
 
-    /* History Styles */
+    .action-btn.analytics {
+      background: var(--warning);
+      color: white;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* QR Code */
+    .qr-container {
+      text-align: center;
+      margin-top: 20px;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    /* History Table */
     .history-table {
       width: 100%;
       border-collapse: collapse;
@@ -358,13 +439,18 @@
       background: rgba(255, 255, 255, 0.03);
     }
 
-    .history-link {
+    .history-url {
+      max-width: 300px;
+      word-break: break-all;
+    }
+
+    .history-url a {
       color: var(--secondary);
       text-decoration: none;
       font-weight: 500;
     }
 
-    .history-link:hover {
+    .history-url a:hover {
       text-decoration: underline;
     }
 
@@ -385,41 +471,34 @@
     }
 
     .history-btn.copy {
-      background: var(--success);
-      color: white;
+      background: rgba(0, 176, 155, 0.2);
+      color: var(--success);
     }
 
     .history-btn.delete {
       background: rgba(255, 94, 98, 0.2);
-      color: #ff5e62;
+      color: var(--accent);
     }
 
-    .no-history {
+    .history-btn.analytics {
+      background: rgba(255, 152, 0, 0.2);
+      color: var(--warning);
+    }
+
+    /* Empty States */
+    .empty-state {
       text-align: center;
-      padding: 40px;
+      padding: 60px 20px;
       color: rgba(255, 255, 255, 0.5);
     }
 
-    /* User ID Section */
-    .user-id-section {
-      background: rgba(40, 40, 50, 0.7);
-      padding: 20px;
-      border-radius: 10px;
+    .empty-state i {
+      font-size: 4rem;
       margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
+      opacity: 0.3;
     }
 
-    .user-id {
-      background: rgba(0, 176, 155, 0.1);
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-family: monospace;
-      flex: 1;
-    }
-
-    /* Loading and Error */
+    /* Loading & Messages */
     .loading {
       text-align: center;
       padding: 40px;
@@ -441,33 +520,31 @@
       100% { transform: rotate(360deg); }
     }
 
-    .error-message {
-      background: rgba(255, 94, 98, 0.1);
-      border: 1px solid rgba(255, 94, 98, 0.3);
-      color: #ff5e62;
+    .message {
       padding: 15px;
       border-radius: 10px;
-      margin: 20px 0;
+      margin: 15px 0;
       display: none;
+      align-items: center;
+      gap: 10px;
     }
 
-    .success-message {
+    .message.error {
+      background: rgba(255, 94, 98, 0.1);
+      border: 1px solid rgba(255, 94, 98, 0.3);
+      color: var(--accent);
+    }
+
+    .message.success {
       background: rgba(0, 176, 155, 0.1);
       border: 1px solid rgba(0, 176, 155, 0.3);
       color: var(--success);
-      padding: 15px;
-      border-radius: 10px;
-      margin: 20px 0;
-      display: none;
     }
 
-    /* QR Code */
-    .qr-container {
-      text-align: center;
-      margin-top: 20px;
-      padding: 25px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
+    .message.warning {
+      background: rgba(255, 152, 0, 0.1);
+      border: 1px solid rgba(255, 152, 0, 0.3);
+      color: var(--warning);
     }
 
     /* Footer */
@@ -477,6 +554,7 @@
       font-size: 0.9rem;
       color: rgba(255, 255, 255, 0.6);
       margin-top: 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .footer a {
@@ -484,10 +562,26 @@
       text-decoration: none;
     }
 
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .container {
         padding: 10px;
+      }
+      
+      .header {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .tabs {
+        flex-direction: column;
       }
       
       .button-group {
@@ -503,16 +597,17 @@
         overflow-x: auto;
       }
       
-      .action-buttons {
+      .action-buttons, .history-actions {
         flex-direction: column;
       }
       
-      .action-btn {
+      .action-btn, .history-btn {
         width: 100%;
       }
       
-      .tabs {
+      .user-section {
         flex-direction: column;
+        text-align: center;
       }
     }
   </style>
@@ -520,6 +615,7 @@
 
 <body>
   <div class="container">
+    <!-- Header -->
     <div class="header">
       <div class="logo">
         <div class="logo-icon">
@@ -527,29 +623,45 @@
         </div>
         <div>
           <h1>QuantumLink</h1>
-          <div class="tagline">Advanced URL Shortener with History & QR Codes</div>
-          <div class="tagline" style="font-size:0.9rem; margin-top:10px;">
+          <div class="tagline">Advanced URL Shortener with Analytics & History</div>
+          <div class="tagline" style="font-size: 0.9rem; margin-top: 10px;">
             Powered by: https://shorturl.aarifalam.life/
           </div>
         </div>
       </div>
     </div>
 
-    <!-- User ID Section -->
-    <div class="user-id-section">
-      <div>
-        <i class="fas fa-user-circle" style="font-size: 2rem; color: var(--secondary);"></i>
+    <!-- User Section -->
+    <div class="user-section">
+      <div style="font-size: 2rem; color: var(--secondary);">
+        <i class="fas fa-user-circle"></i>
       </div>
-      <div style="flex: 1;">
+      <div class="user-info">
         <div style="font-weight: 600; margin-bottom: 5px;">Your User ID</div>
         <div class="user-id" id="userIdDisplay">Loading...</div>
         <div style="font-size: 0.85rem; margin-top: 8px; color: rgba(255,255,255,0.7);">
           This ID saves your link history. Bookmark this page to keep your history.
         </div>
       </div>
-      <button class="btn" onclick="copyUserId()" style="background: rgba(255,255,255,0.1);">
-        <i class="fas fa-copy"></i> Copy ID
-      </button>
+      <div>
+        <button class="btn btn-small" onclick="copyUserId()">
+          <i class="fas fa-copy"></i> Copy ID
+        </button>
+        <button class="btn btn-small" onclick="generateNewUserId()" style="margin-top: 10px;">
+          <i class="fas fa-redo"></i> New ID
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="message success" id="successMessage"></div>
+    <div class="message error" id="errorMessage"></div>
+    <div class="message warning" id="warningMessage"></div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="loader"></div>
+      <p>Processing your request...</p>
     </div>
 
     <!-- Tabs -->
@@ -559,6 +671,9 @@
       </div>
       <div class="tab" onclick="switchTab('history')">
         <i class="fas fa-history"></i> My History
+      </div>
+      <div class="tab" onclick="switchTab('analytics')">
+        <i class="fas fa-chart-bar"></i> Analytics
       </div>
     </div>
 
@@ -574,7 +689,10 @@
           <label for="longURL"><i class="fas fa-link"></i> Destination URL</label>
           <div class="input-with-icon">
             <i class="fas fa-globe"></i>
-            <input type="url" id="longURL" placeholder="https://example.com/your-long-url-here">
+            <input type="url" id="longURL" placeholder="https://example.com/your-long-url-here" required>
+          </div>
+          <div style="font-size: 0.85rem; margin-top: 5px; color: rgba(255,255,255,0.7);">
+            Must include http:// or https://
           </div>
         </div>
         
@@ -584,8 +702,8 @@
             <i class="fas fa-hashtag"></i>
             <input type="text" id="customKey" placeholder="mycustomlink" maxlength="30">
           </div>
-          <div class="tagline" style="font-size:0.85rem; margin-top:5px;">
-            Leave empty for auto-generated (3-30 chars, letters, numbers, hyphens)
+          <div style="font-size: 0.85rem; margin-top: 5px; color: rgba(255,255,255,0.7);">
+            3-30 characters (letters, numbers, hyphens, underscores)
           </div>
         </div>
         
@@ -619,16 +737,9 @@
         </div>
       </div>
       
-      <div class="loading" id="loading">
-        <div class="loader"></div>
-        <p>Creating your short URL...</p>
-      </div>
-      
-      <div class="error-message" id="error"></div>
-      <div class="success-message" id="success"></div>
-      
-      <div class="result-container" id="resultContainer" style="display:none;">
-        <div class="result-box">
+      <!-- Result Section -->
+      <div class="result-container" id="resultContainer" style="display: none;">
+        <div class="card">
           <div class="result-title">
             <i class="fas fa-check-circle"></i>
             <span>Short URL Created Successfully!</span>
@@ -649,6 +760,10 @@
               <i class="fas fa-chart-line"></i>
               <span>Clicks: <span id="clickCount">0</span></span>
             </div>
+            <div class="stat">
+              <i class="fas fa-lock"></i>
+              <span>Password: <span id="passwordStatus">No</span></span>
+            </div>
           </div>
           
           <div class="action-buttons">
@@ -658,19 +773,22 @@
             <button class="action-btn qr" onclick="generateQRCode()">
               <i class="fas fa-qrcode"></i> Generate QR
             </button>
-            <button class="action-btn delete" onclick="deleteShortURL()">
+            <button class="action-btn analytics" onclick="viewAnalytics()">
+              <i class="fas fa-chart-bar"></i> View Analytics
+            </button>
+            <button class="action-btn delete" onclick="deleteCurrentURL()">
               <i class="fas fa-trash"></i> Delete
             </button>
           </div>
         </div>
         
-        <div id="qrContainer" class="qr-container" style="display:none;">
+        <!-- QR Code Container -->
+        <div id="qrContainer" class="qr-container" style="display: none;">
           <h3><i class="fas fa-qrcode"></i> QR Code</h3>
           <div id="qrcode"></div>
-          <p>Scan to open the link</p>
-          <div class="action-buttons" style="justify-content: center;">
+          <div style="margin-top: 20px;">
             <button class="action-btn" onclick="downloadQRCode()">
-              <i class="fas fa-download"></i> Download QR
+              <i class="fas fa-download"></i> Download QR Code
             </button>
           </div>
         </div>
@@ -683,14 +801,14 @@
         <div class="card-title">
           <i class="fas fa-history"></i>
           <span>My URL History</span>
-          <button class="btn" onclick="refreshHistory()" style="margin-left: auto; padding: 8px 15px; font-size: 14px;">
-            <i class="fas fa-sync-alt"></i> Refresh
-          </button>
-        </div>
-        
-        <div class="loading" id="historyLoading">
-          <div class="loader"></div>
-          <p>Loading your history...</p>
+          <div style="margin-left: auto; display: flex; gap: 10px;">
+            <button class="btn btn-small" onclick="refreshHistory()">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button class="btn btn-small" onclick="clearAllHistory()" style="background: rgba(255, 94, 98, 0.2); color: var(--accent);">
+              <i class="fas fa-trash"></i> Clear All
+            </button>
+          </div>
         </div>
         
         <div id="historyContent">
@@ -698,82 +816,105 @@
         </div>
       </div>
     </div>
-    
+
+    <!-- Analytics Tab -->
+    <div id="analyticsTab" class="tab-content">
+      <div class="card">
+        <div class="card-title">
+          <i class="fas fa-chart-bar"></i>
+          <span>URL Analytics</span>
+        </div>
+        
+        <div class="input-group">
+          <label for="analyticsKey"><i class="fas fa-key"></i> Enter Short URL Key</label>
+          <div class="input-with-icon">
+            <i class="fas fa-link"></i>
+            <input type="text" id="analyticsKey" placeholder="Enter your short URL key (e.g., smart-tunnel-47)">
+          </div>
+          <button class="btn btn-primary" onclick="fetchAnalytics()" style="margin-top: 10px;">
+            <i class="fas fa-search"></i> Get Analytics
+          </button>
+        </div>
+        
+        <div id="analyticsResult" style="display: none;">
+          <!-- Analytics will be shown here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
     <div class="footer">
-      <p>Powered by <strong>aarifalam.life</strong> | Domain: <a href="https://shorturl.aarifalam.life/" target="_blank">shorturl.aarifalam.life</a></p>
-      <p>Worker: <a href="https://url.aarif753alam.workers.dev/" target="_blank">url.aarif753alam.workers.dev</a></p>
+      <p>Powered by <strong>aarifalam.life</strong> | 
+        <a href="https://shorturl.aarifalam.life/" target="_blank">Short Domain</a> | 
+        <a href="https://url.aarif753alam.workers.dev/api/health" target="_blank">Worker Status</a>
+      </p>
       <p>© 2025 QuantumLink URL Shortener. All rights reserved.</p>
     </div>
   </div>
 
-  <!-- Include QR Code Library -->
+  <!-- QR Code Library -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-  
+
   <script>
     // Global variables
-    let userId = null;
-    let currentShortURLData = null;
-    const API_BASE = 'https://url.aarif753alam.workers.dev';
-    const SHORT_DOMAIN = 'https://shorturl.aarifalam.life';
+    const API_BASE = 'https://shorturl.aarifalam.life';
+    let currentUserId = null;
+    let currentURLData = null;
+    let currentQRCode = null;
 
-    // Initialize on load
+    // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
-      initializeUserId();
-      loadHistory();
+      initializeApp();
     });
 
-    // Generate or retrieve User ID
-    function initializeUserId() {
-      // Check if user ID exists in localStorage
-      userId = localStorage.getItem('quantumlink_userid');
-      
-      if (!userId) {
-        // Generate new user ID
-        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('quantumlink_userid', userId);
-      }
-      
-      document.getElementById('userIdDisplay').textContent = userId;
-    }
-
-    function copyUserId() {
-      navigator.clipboard.writeText(userId)
-        .then(() => {
-          showMessage('User ID copied to clipboard!', 'success');
-        })
-        .catch(err => {
-          showError('Failed to copy User ID');
+    // Initialize application
+    async function initializeApp() {
+      try {
+        // Generate or get User ID
+        currentUserId = localStorage.getItem('quantumlink_userid');
+        if (!currentUserId) {
+          currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem('quantumlink_userid', currentUserId);
+        }
+        
+        document.getElementById('userIdDisplay').textContent = currentUserId;
+        
+        // Initialize expiry options
+        document.querySelectorAll('.expiry-option').forEach(option => {
+          option.addEventListener('click', function() {
+            document.querySelectorAll('.expiry-option').forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('expiryDays').value = this.getAttribute('data-days');
+          });
         });
+        
+        // Load history if user has some
+        loadHistory();
+        
+        showMessage('Welcome to QuantumLink!', 'success');
+      } catch (error) {
+        console.error('Initialization error:', error);
+        showMessage('Failed to initialize app. Please refresh.', 'error');
+      }
     }
 
     // Tab switching
     function switchTab(tabName) {
-      // Update tabs
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-      });
+      // Update active tab
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
       // Activate selected tab
       document.querySelector(`.tab[onclick*="${tabName}"]`).classList.add('active');
       document.getElementById(tabName + 'Tab').classList.add('active');
       
-      // Load history if switching to history tab
+      // Load content for tab
       if (tabName === 'history') {
         loadHistory();
+      } else if (tabName === 'analytics') {
+        document.getElementById('analyticsResult').style.display = 'none';
       }
     }
-
-    // Set active expiry option
-    document.querySelectorAll('.expiry-option').forEach(option => {
-      option.addEventListener('click', function() {
-        document.querySelectorAll('.expiry-option').forEach(opt => opt.classList.remove('active'));
-        this.classList.add('active');
-        document.getElementById('expiryDays').value = this.getAttribute('data-days');
-      });
-    });
 
     // Create Short URL
     async function createShortURL() {
@@ -782,24 +923,24 @@
       const expiryDays = document.getElementById('expiryDays').value;
       const password = document.getElementById('password').value.trim();
 
-      // Clear previous results and errors
-      hideAllMessages();
+      // Clear messages and hide results
+      clearMessages();
       document.getElementById('resultContainer').style.display = 'none';
       document.getElementById('qrContainer').style.display = 'none';
       document.getElementById('loading').style.display = 'block';
 
       // Validation
       if (!longURL) {
-        showError('Please enter a destination URL.');
+        showMessage('Please enter a destination URL.', 'error');
         document.getElementById('loading').style.display = 'none';
         return;
       }
 
       try {
-        // Validate URL format
+        // Validate URL
         new URL(longURL);
-      } catch (e) {
-        showError('Please enter a valid URL (include http:// or https://)');
+      } catch (error) {
+        showMessage('Invalid URL. Please include http:// or https://', 'error');
         document.getElementById('loading').style.display = 'none';
         return;
       }
@@ -807,25 +948,29 @@
       try {
         const response = await fetch(`${API_BASE}/api/create`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            longURL, 
-            customKey, 
-            expiryDays,
-            password,
-            userId
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            longURL,
+            customKey: customKey || undefined,
+            expiryDays: parseInt(expiryDays) || undefined,
+            password: password || undefined,
+            userId: currentUserId
           })
         });
 
         const data = await response.json();
-        
         document.getElementById('loading').style.display = 'none';
 
         if (!response.ok || !data.success) {
-          showError(data.error || 'Failed to create short URL. Please try again.');
+          showMessage(data.error || 'Failed to create short URL', 'error');
           return;
         }
 
+        // Store current URL data
+        currentURLData = data;
+        
         // Display result
         displayResult(data);
         showMessage('Short URL created successfully!', 'success');
@@ -835,79 +980,62 @@
         
       } catch (error) {
         document.getElementById('loading').style.display = 'none';
-        showError('Network error. Please check your connection and try again.');
+        showMessage('Network error. Please check your connection.', 'error');
       }
     }
 
+    // Display created URL result
     function displayResult(data) {
       const resultContainer = document.getElementById('resultContainer');
       const shortURLDisplay = document.getElementById('shortURLDisplay');
       const createdDate = document.getElementById('createdDate');
       const expiryDate = document.getElementById('expiryDate');
+      const clickCount = document.getElementById('clickCount');
+      const passwordStatus = document.getElementById('passwordStatus');
       
-      // Store current data
-      currentShortURLData = data;
-      
-      // Set data
+      // Set values
       shortURLDisplay.innerHTML = `<a href="${data.shortURL}" target="_blank">${data.shortURL}</a>`;
+      createdDate.textContent = formatDate(new Date());
       
-      const now = new Date();
-      createdDate.textContent = formatDate(now);
-      
-      // Calculate expiry date
       if (data.expires) {
         expiryDate.textContent = formatDate(new Date(data.expires));
       } else {
         expiryDate.textContent = 'Never';
       }
       
-      // Show result container
-      resultContainer.style.display = 'block';
+      clickCount.textContent = '0';
+      passwordStatus.textContent = data.passwordProtected ? 'Yes' : 'No';
       
-      // Smooth scroll to results
+      // Show result
+      resultContainer.style.display = 'block';
       resultContainer.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Load History
+    // Load user history
     async function loadHistory() {
       const historyContent = document.getElementById('historyContent');
-      const historyLoading = document.getElementById('historyLoading');
-      
-      historyContent.innerHTML = '';
-      historyLoading.style.display = 'block';
       
       try {
-        const response = await fetch(`${API_BASE}/api/history/${userId}`);
+        const response = await fetch(`${API_BASE}/api/history/${currentUserId}`);
         const data = await response.json();
         
-        historyLoading.style.display = 'none';
-        
         if (!response.ok || !data.success) {
-          historyContent.innerHTML = `
-            <div class="no-history">
-              <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 20px; color: rgba(255,255,255,0.3);"></i>
-              <p>Failed to load history. Please try again.</p>
-            </div>
-          `;
+          showMessage('Failed to load history', 'error');
+          historyContent.innerHTML = getEmptyHistoryHTML('Error loading history');
           return;
         }
         
         if (!data.history || data.history.length === 0) {
-          historyContent.innerHTML = `
-            <div class="no-history">
-              <i class="fas fa-history" style="font-size: 3rem; margin-bottom: 20px; color: rgba(255,255,255,0.3);"></i>
-              <p>No URL history yet.</p>
-              <p style="margin-top: 10px; font-size: 0.9rem;">Create your first short URL above!</p>
-            </div>
-          `;
+          historyContent.innerHTML = getEmptyHistoryHTML('No URLs created yet');
           return;
         }
         
-        // Generate history table
+        // Build history table
         let tableHTML = `
           <table class="history-table">
             <thead>
               <tr>
+                <th>Title</th>
                 <th>Short URL</th>
                 <th>Created</th>
                 <th>Clicks</th>
@@ -919,28 +1047,34 @@
         `;
         
         data.history.forEach(item => {
-          const shortURL = `${SHORT_DOMAIN}/${item.key}`;
-          const created = formatDate(new Date(item.created));
-          const isExpired = item.expiry && new Date(item.expiry) < new Date();
+          const shortURL = `${API_BASE}/${item.key}`;
+          const createdDate = formatDate(new Date(item.created));
+          const isActive = item.isActive !== false;
+          const hasPassword = item.passwordProtected;
           
           tableHTML += `
             <tr>
-              <td>
-                <div style="font-weight: 500;">${item.title}</div>
-                <a href="${shortURL}" target="_blank" class="history-link">${shortURL}</a>
-                ${item.passwordProtected ? ' <i class="fas fa-lock" style="color: #ff9800; font-size: 0.8rem;" title="Password Protected"></i>' : ''}
+              <td class="history-url">
+                <strong>${item.title || 'Untitled'}</strong>
+                ${hasPassword ? ' <i class="fas fa-lock" style="color: #ff9800;" title="Password Protected"></i>' : ''}
               </td>
-              <td>${created}</td>
-              <td>${item.clicks}</td>
+              <td class="history-url">
+                <a href="${shortURL}" target="_blank">${shortURL}</a>
+              </td>
+              <td>${createdDate}</td>
+              <td>${item.clicks || 0}</td>
               <td>
-                ${isExpired ? 
-                  '<span style="color: #ff5e62;"><i class="fas fa-exclamation-circle"></i> Expired</span>' : 
-                  '<span style="color: #00b09b;"><i class="fas fa-check-circle"></i> Active</span>'}
+                ${isActive ? 
+                  '<span style="color: #00b09b;"><i class="fas fa-check-circle"></i> Active</span>' : 
+                  '<span style="color: #ff5e62;"><i class="fas fa-times-circle"></i> Expired</span>'}
               </td>
               <td>
                 <div class="history-actions">
                   <button class="history-btn copy" onclick="copyHistoryURL('${item.key}')">
                     <i class="fas fa-copy"></i> Copy
+                  </button>
+                  <button class="history-btn analytics" onclick="viewURLInfo('${item.key}')">
+                    <i class="fas fa-chart-bar"></i> Info
                   </button>
                   <button class="history-btn delete" onclick="deleteHistoryURL('${item.key}')">
                     <i class="fas fa-trash"></i> Delete
@@ -954,150 +1088,159 @@
         tableHTML += `
             </tbody>
           </table>
+          <div style="margin-top: 15px; text-align: center; color: rgba(255,255,255,0.6);">
+            Showing ${data.history.length} URLs
+          </div>
         `;
         
         historyContent.innerHTML = tableHTML;
         
       } catch (error) {
-        historyLoading.style.display = 'none';
-        historyContent.innerHTML = `
-          <div class="no-history">
-            <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 20px; color: rgba(255,255,255,0.3);"></i>
-            <p>Network error. Please check your connection.</p>
+        console.error('History load error:', error);
+        historyContent.innerHTML = getEmptyHistoryHTML('Error loading history');
+        showMessage('Failed to load history', 'error');
+      }
+    }
+
+    // Empty history HTML
+    function getEmptyHistoryHTML(message) {
+      return `
+        <div class="empty-state">
+          <i class="fas fa-history"></i>
+          <h3>${message}</h3>
+          <p style="margin-top: 10px;">Create your first short URL in the "Create URL" tab!</p>
+        </div>
+      `;
+    }
+
+    // Fetch analytics for a URL
+    async function fetchAnalytics() {
+      const key = document.getElementById('analyticsKey').value.trim();
+      
+      if (!key) {
+        showMessage('Please enter a URL key', 'error');
+        return;
+      }
+      
+      try {
+        document.getElementById('loading').style.display = 'block';
+        
+        const response = await fetch(`${API_BASE}/api/info/${key}`);
+        const data = await response.json();
+        
+        document.getElementById('loading').style.display = 'none';
+        
+        if (!response.ok || !data.success) {
+          showMessage(data.error || 'URL not found', 'error');
+          return;
+        }
+        
+        displayAnalytics(data.info);
+        
+      } catch (error) {
+        document.getElementById('loading').style.display = 'none';
+        showMessage('Failed to fetch analytics', 'error');
+      }
+    }
+
+    // Display analytics
+    function displayAnalytics(info) {
+      const analyticsResult = document.getElementById('analyticsResult');
+      
+      const html = `
+        <div class="result-box">
+          <div class="result-title">
+            <i class="fas fa-chart-bar"></i>
+            <span>Analytics for: ${info.key}</span>
           </div>
-        `;
-      }
-    }
-
-    function refreshHistory() {
-      loadHistory();
-    }
-
-    function copyHistoryURL(key) {
-      const url = `${SHORT_DOMAIN}/${key}`;
-      navigator.clipboard.writeText(url)
-        .then(() => {
-          showMessage('URL copied to clipboard!', 'success');
-        })
-        .catch(err => {
-          showError('Failed to copy URL');
-        });
-    }
-
-    async function deleteHistoryURL(key) {
-      if (!confirm('Are you sure you want to delete this short URL?')) {
-        return;
-      }
+          
+          <div class="stats">
+            <div class="stat">
+              <i class="fas fa-link"></i>
+              <span>Short URL: <a href="${API_BASE}/${info.key}" target="_blank">${API_BASE}/${info.key}</a></span>
+            </div>
+            <div class="stat">
+              <i class="fas fa-calendar"></i>
+              <span>Created: ${formatDate(new Date(info.created))}</span>
+            </div>
+            <div class="stat">
+              <i class="fas fa-mouse-pointer"></i>
+              <span>Clicks: ${info.clicks || 0}</span>
+            </div>
+            <div class="stat">
+              <i class="fas fa-clock"></i>
+              <span>Last Click: ${info.lastAccessed ? formatDate(new Date(info.lastAccessed)) : 'Never'}</span>
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h4>Destination URL:</h4>
+            <div style="word-break: break-all; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; margin-top: 5px;">
+              ${info.longURL}
+            </div>
+          </div>
+        </div>
+      `;
       
-      try {
-        const response = await fetch(`${API_BASE}/api/delete/${key}`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          showMessage('URL deleted successfully!', 'success');
-          loadHistory();
-        } else {
-          showError(data.error || 'Failed to delete URL');
-        }
-      } catch (error) {
-        showError('Network error. Please try again.');
+      analyticsResult.innerHTML = html;
+      analyticsResult.style.display = 'block';
+    }
+
+    // Utility Functions
+    function copyUserId() {
+      navigator.clipboard.writeText(currentUserId)
+        .then(() => showMessage('User ID copied to clipboard!', 'success'))
+        .catch(() => showMessage('Failed to copy User ID', 'error'));
+    }
+
+    function generateNewUserId() {
+      if (confirm('Generating a new User ID will reset your history. Continue?')) {
+        currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('quantumlink_userid', currentUserId);
+        document.getElementById('userIdDisplay').textContent = currentUserId;
+        loadHistory();
+        showMessage('New User ID generated!', 'success');
       }
-    }
-
-    // Delete current short URL
-    async function deleteShortURL() {
-      if (!currentShortURLData || !confirm('Are you sure you want to delete this short URL?')) {
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${API_BASE}/api/delete/${currentShortURLData.key}`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-          showMessage('URL deleted successfully!', 'success');
-          document.getElementById('resultContainer').style.display = 'none';
-          currentShortURLData = null;
-          loadHistory();
-        } else {
-          showError(data.error || 'Failed to delete URL');
-        }
-      } catch (error) {
-        showError('Network error. Please try again.');
-      }
-    }
-
-    // Utility functions
-    function showError(message) {
-      const errorElement = document.getElementById('error');
-      errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-      errorElement.style.display = 'block';
-    }
-
-    function showMessage(message, type = 'success') {
-      const elementId = type === 'success' ? 'success' : 'error';
-      const element = document.getElementById(elementId);
-      element.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-      element.style.display = 'block';
-      
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        element.style.display = 'none';
-      }, 5000);
-    }
-
-    function hideAllMessages() {
-      document.getElementById('error').style.display = 'none';
-      document.getElementById('success').style.display = 'none';
     }
 
     function clearForm() {
       document.getElementById('longURL').value = '';
       document.getElementById('customKey').value = '';
       document.getElementById('password').value = '';
-      hideAllMessages();
       document.getElementById('resultContainer').style.display = 'none';
       document.getElementById('qrContainer').style.display = 'none';
+      clearMessages();
       
-      // Reset expiry to default
+      // Reset expiry
       document.querySelectorAll('.expiry-option').forEach(opt => opt.classList.remove('active'));
       document.querySelector('.expiry-option[data-days="30"]').classList.add('active');
       document.getElementById('expiryDays').value = '30';
     }
 
     function copyShortURL() {
-      if (!currentShortURLData) return;
+      if (!currentURLData) return;
       
-      navigator.clipboard.writeText(currentShortURLData.shortURL)
-        .then(() => {
-          showMessage('URL copied to clipboard!', 'success');
-        })
-        .catch(err => {
-          showError('Failed to copy to clipboard');
-        });
+      navigator.clipboard.writeText(currentURLData.shortURL)
+        .then(() => showMessage('URL copied to clipboard!', 'success'))
+        .catch(() => showMessage('Failed to copy URL', 'error'));
+    }
+
+    function copyHistoryURL(key) {
+      const url = `${API_BASE}/${key}`;
+      navigator.clipboard.writeText(url)
+        .then(() => showMessage('URL copied to clipboard!', 'success'))
+        .catch(() => showMessage('Failed to copy URL', 'error'));
     }
 
     function generateQRCode() {
-      if (!currentShortURLData) return;
+      if (!currentURLData) return;
       
       const qrContainer = document.getElementById('qrContainer');
       const qrcodeElement = document.getElementById('qrcode');
       
-      // Clear previous QR code
       qrcodeElement.innerHTML = '';
       
-      // Generate new QR code
-      QRCode.toCanvas(qrcodeElement, currentShortURLData.shortURL, {
+      QRCode.toCanvas(qrcodeElement, currentURLData.shortURL, {
         width: 200,
         height: 200,
         color: {
@@ -1106,7 +1249,7 @@
         }
       }, function(error) {
         if (error) {
-          showError('Failed to generate QR code');
+          showMessage('Failed to generate QR code', 'error');
         } else {
           qrContainer.style.display = 'block';
           qrContainer.scrollIntoView({ behavior: 'smooth' });
@@ -1119,16 +1262,148 @@
       if (!canvas) return;
       
       const link = document.createElement('a');
-      link.download = `qr-${currentShortURLData.key}.png`;
+      link.download = `qr-${currentURLData.key}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
 
+    async function deleteCurrentURL() {
+      if (!currentURLData || !confirm('Delete this short URL?')) return;
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/delete/${currentURLData.key}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUserId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('URL deleted successfully', 'success');
+          document.getElementById('resultContainer').style.display = 'none';
+          currentURLData = null;
+          loadHistory();
+        } else {
+          showMessage(data.error || 'Failed to delete URL', 'error');
+        }
+      } catch (error) {
+        showMessage('Failed to delete URL', 'error');
+      }
+    }
+
+    async function deleteHistoryURL(key) {
+      if (!confirm('Delete this short URL?')) return;
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/delete/${key}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUserId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('URL deleted successfully', 'success');
+          loadHistory();
+        } else {
+          showMessage(data.error || 'Failed to delete URL', 'error');
+        }
+      } catch (error) {
+        showMessage('Failed to delete URL', 'error');
+      }
+    }
+
+    async function clearAllHistory() {
+      if (!confirm('Clear all history? This cannot be undone.')) return;
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/clear-history/${currentUserId}`, {
+          method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          showMessage('All history cleared', 'success');
+          loadHistory();
+        } else {
+          showMessage('Failed to clear history', 'error');
+        }
+      } catch (error) {
+        showMessage('Failed to clear history', 'error');
+      }
+    }
+
+    async function viewURLInfo(key) {
+      try {
+        const response = await fetch(`${API_BASE}/api/info/${key}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          alert(`
+URL Information:
+---------------
+Key: ${data.info.key}
+Created: ${formatDate(new Date(data.info.created))}
+Clicks: ${data.info.clicks || 0}
+Expires: ${data.info.expiry ? formatDate(new Date(data.info.expiry)) : 'Never'}
+Password: ${data.info.password ? 'Yes' : 'No'}
+Long URL: ${data.info.longURL}
+          `);
+        }
+      } catch (error) {
+        showMessage('Failed to get URL info', 'error');
+      }
+    }
+
+    function viewAnalytics() {
+      if (!currentURLData) return;
+      
+      document.getElementById('analyticsKey').value = currentURLData.key;
+      switchTab('analytics');
+      setTimeout(() => fetchAnalytics(), 100);
+    }
+
+    function refreshHistory() {
+      loadHistory();
+      showMessage('History refreshed', 'success');
+    }
+
+    // Message handling
+    function showMessage(text, type = 'info') {
+      clearMessages();
+      
+      const messageElement = document.getElementById(`${type}Message`);
+      if (messageElement) {
+        messageElement.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i> ${text}`;
+        messageElement.style.display = 'flex';
+        
+        // Auto-hide success messages after 5 seconds
+        if (type === 'success') {
+          setTimeout(() => {
+            messageElement.style.display = 'none';
+          }, 5000);
+        }
+      }
+    }
+
+    function clearMessages() {
+      ['success', 'error', 'warning'].forEach(type => {
+        const element = document.getElementById(`${type}Message`);
+        if (element) element.style.display = 'none';
+      });
+    }
+
+    // Date formatting
     function formatDate(date) {
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     }
   </script>
